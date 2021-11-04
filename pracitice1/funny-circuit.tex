@@ -1,0 +1,220 @@
+
+\documentclass{standalone}
+
+\usepackage{tikz}
+\usetikzlibrary
+{
+  calc,             % 用于计算坐标点
+  arrows.meta,
+  intersections     % 用以计算交点坐标
+}
+
+%============[加载元件参数, 命令]=============
+\input{icons/diode}
+\input{icons/triode}
+\input{icons/engine}
+\input{icons/ground}
+\input{icons/funny}
+
+
+
+%============[定义命令]============
+% - - - - - - - [定义滑稽管命令] - - - - - - -
+\newcommand{\funnyTriode}[2]
+{
+  \begin{scope}[#1]
+    \triode{}{#2}
+    \funny{xscale = -1}
+  \end{scope}
+}
+% - - - - - - - [定义求交点命令] - - - - - - -
+\newcommand{\extinter}[5]
+% 用以延长线段并相交
+% #1 用以给定射线端点
+% #2 用以给定射线上另一点
+% #3 用以给定延长比例
+% #4 用以给定被交线段
+% #5 用以给定交点名称
+{
+  \coordinate (ultra point) at ($(#1)!#3!(#2)$);
+  %\coordinate (ultra #1 #2) at ($(#1)!#3!(#2)$);
+  \path [name path = extend path] (ultra point) -- (#1);
+  %\path [name path = extend #1 #2] (ultra #1 #2) -- (#1);
+  \path [name intersections = {of = extend path and #4, by = #5}];
+  %\path [name intersections = {of = extend #1 #2 and #4, by = #5}];
+}
+% - - - - - - - [定义元件放置板网格命令] - - - - - - -
+\newcommand{\drawhelpline}
+{\draw [help lines, step = 1] (-6,-3) grid (6,4);}
+% - - - - - - - [定义测量命令] - - - - - - -
+\newcommand{\measuring}[4]
+% 用以对两给定坐标标注距离
+% #1 坐标1
+% #2 坐标2
+% #3 偏移量
+% #4 标注数值
+{
+  \draw (#1) -- ($(#1) + (#3)$);
+  \draw [<->] ($(#1) + (#3)$) --
+    node {#4} ($(#2) + (#3)$);
+  \draw ($(#2) + (#3)$) -- (#2);
+}
+
+%============[定义参数]============
+\newcommand{\radpin}{0.05}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+  \begin{tikzpicture}
+
+    %==============[绘制网格线]==============
+    %\drawhelpline           % 电路设计网格线
+
+    %==============[元件放置板]==============
+    \begin{scope}[scale = 1]
+
+      % - - - - - - [二极管] - - - - - - -
+      \diode{shift = {(-2, 1)}}{D1}
+      \diode{shift = {(-2, -1)}}{D2}
+      \diode{shift = {(2,1)}}{D3}
+      \diode{shift = {(2,-1)}}{D4}
+
+
+      % - - - - - - [三极管] - - - - - - -
+      %\triode{shift = {(-4, 1)}}{T1}
+      %\triode{shift = {(-4,-1)}}{T2}
+
+      %\triode{shift = {(4, 1)}, xscale = -1}{T3}
+      %\triode{shift = {(4, -1)}, xscale = -1}{T4}
+
+      %\funny{shift = {(T1 center)},xscale = -1}
+      %\funny{shift = {(T2 center)},xscale = -1}
+      %\funny{shift = {(T3 center)}}
+      %\funny{shift = {(T4 center)}}
+
+      \funnyTriode{shift = {(-4, 1)}}{T1}
+      \funnyTriode{shift = {(-4,-1)}}{T2}
+      \funnyTriode{shift = {(4, 1)}, xscale = -1}{T3}
+      \funnyTriode{shift = {(4, -1)}, xscale = -1}{T4}
+
+
+
+      % - - - - - - [电机与地线] - - - - - - -
+      \engine{}{E}
+      \ground{shift={(0,-2)}}{GND}
+
+    \end{scope}
+
+
+
+    %==============[元件连线与标号]==============
+    \begin{scope}
+
+      % - - - - - - - - [设定点] - - - - - - -
+      \path [inner sep = 0pt, minimum size = 0pt]
+        %
+        (-5,2) coordinate (a) --
+        (-2,2) coordinate (b) --
+        (0,2) coordinate (c) --
+        (2,2) coordinate (d) --
+        (5,2) coordinate (e) --
+        (-5,-2) coordinate (f) --
+        (-2,-2) coordinate (g) --
+        (0,-2) coordinate (h) --
+        (2,-2) coordinate (i) --
+        (5,-2) coordinate (j) --
+        (-5,0) coordinate (k) --
+        (5,0)  coordinate (l);
+      %
+
+
+
+      % - - - - - - - - [标元件名字] - - - - - - -
+      \node [label = left:D1] at (D1 center){};
+      \node [label = left:D2] at (D2 center){};
+      \node [label = left:D3] at (D3 center){};
+      \node [label = left:D4] at (D4 center){};
+
+      \node [label = T1] at (T1 top vert){};
+      \node [label = T2] at (T2 top vert){};
+      \node [label = T3] at (T3 top vert){};
+      \node [label = T4] at (T4 top vert){};
+
+      \node [label = E, yshift = 2ex] at (E center){};
+
+
+
+      % - - - - - - - - [连线] - - - - - - -
+      \draw (T1 e) -- (T2 c);
+      \draw (T3 e) -- (T4 c);
+      \draw (D1 butt) -- (D2 head);
+      \draw (D3 butt) -- (D4 head);
+      \draw (D1 head) -- (b);
+      \draw (D3 head) -- (d);
+      \draw (D2 butt) -- (g);
+      \draw (D4 butt) -- (i);
+
+      %
+      \path [name path = kl] (k) -- (l);
+      \path [name path = fj] (f) -- (j);
+      \extinter{T1 b}{T2 b}{1}{kl}{u1 -}
+      \extinter{T3 b}{T4 b}{1}{kl}{u3 -}
+      \extinter{T1 b}{T2 b}{2}{fj}{u2 -}
+      \extinter{T3 b}{T4 b}{2}{fj}{u4 -}
+
+      \coordinate (u1 +) at (T1 b);
+      \coordinate (u2 +) at (T2 b);
+      \coordinate (u3 +) at (T3 b);
+      \coordinate (u4 +) at (T4 b);
+
+      \draw (u2 -) -- (u4 -);
+      \draw (u1 -) -- (E head);
+      \draw (u3 -) -- (E tail);
+
+      \draw [fill = white]
+        (u1 +) circle (\radpin)
+        (u1 -) circle (\radpin)
+        (u2 +) circle (\radpin)
+        (u2 -) circle (\radpin)
+        (u3 +) circle (\radpin)
+        (u3 -) circle (\radpin)
+        (u4 +) circle (\radpin)
+        (u4 -) circle (\radpin);
+      %
+
+      \path [name path = ae] (a) --(e);
+
+      \extinter{T2 c}{T2 e}{3}{fj}{T2 e connect}
+      \extinter{T4 c}{T4 e}{3}{fj}{T4 e connect}
+      \extinter{T1 e}{T1 c}{3}{ae}{T1 c connect}
+      \extinter{T3 e}{T3 c}{3}{ae}{T3 c connect}
+
+      \draw (T1 c connect) -- (T1 c);
+      \draw (T3 c connect) -- (T3 c);
+      \draw (T2 e connect) -- (T2 e);
+      \draw (T4 e connect) -- (T4 e);
+
+      \draw (T1 c connect) -- (T3 c connect);
+
+
+      \coordinate [label = right:$U_D$] (uD) at (0,3);
+      \draw (uD) -- (c);
+      \draw [fill = white] (uD) circle (\radpin);
+      \draw (uD) -- +(0.1,0.1) -- +(-0.1,-0.1);
+
+      \extinter{T1 e}{T2 c}{1}{kl}{T1 e connect};
+      \extinter{T3 e}{T4 c}{1}{kl}{T3 e connect};
+      \fill (T1 e connect) circle (\radpin);
+      \fill (T3 e connect) circle (\radpin);
+      \fill (-2,0) circle (\radpin);
+      \fill (2,0) circle (\radpin);
+
+    \end{scope}
+
+
+  \end{tikzpicture}
+\end{document}

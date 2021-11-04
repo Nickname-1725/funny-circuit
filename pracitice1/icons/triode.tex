@@ -1,0 +1,56 @@
+%============[三极管尺寸参数]============
+\newcommand{\Tvertline}{0.5}
+\newcommand{\Thoriline}{0.5}
+\newcommand{\Tvicevert}{0.25}
+\newcommand{\Tcedist}{0.6}
+\newcommand{\Tbcdist}{1}
+%\newcommand{\radb}{0.05}
+
+%===========[绘制三极管]=============
+\newcommand{\triode}[2]
+% #1 用于给定坐标点的变换
+% #2 用于给定元件标号
+{
+  \begin{scope}
+    [
+      >={Stealth},
+      scale = 1,
+      opacity = 1
+    ]
+
+    % - - - - - - - [定义坐标点] - - - - - - -
+    \begin{scope}
+      \path[#1]
+        (0,0)                           coordinate (#2 center) --
+        +(-\Thoriline,0)                 coordinate (#2 b) --
+        +(\Tbcdist-\Tvertline,\Tcedist/2)  coordinate (#2 c) --
+        +(\Tbcdist-\Tvertline,-\Tcedist/2) coordinate (#2 e) --
+        +(0,\Tvicevert/2)                coordinate (#2 c vice)  --
+        +(0,-\Tvicevert/2)               coordinate (#2 e vice) --
+        +(0,{\Tvertline/2})              coordinate (#2 top vert) --
+        +(0,{-\Tvertline/2})             coordinate (#2 bottom vert);
+    \end{scope}
+
+
+    % - - - - - - - [画图] - - - - - - -
+    \draw [thick] (#2 b) -- (#2 center);
+    %\draw [fill = white] (#2 b) circle (\radb);
+
+    \draw [very thick] (#2 top vert) -- (#2 bottom vert);
+    \draw [thick] (#2 c vice) -- (#2 c);
+    \draw [thick, ->] (#2 e vice) -- (#2 e);
+
+    % - - - - - - - [绘制辅助线] - - - - - - -
+    \begin{scope}
+      [help lines, opacity = 0]
+      \measuring{#2 c}{#2 e}{0.1,0}{\Tcedist}
+      \measuring{#2 top vert}{#2 bottom vert}{0.2,0}{\Tvertline}
+      \measuring{#2 c vice}{#2 e vice}{-0.2,0}{\Tvicevert}
+      \measuring{#2 b}{#2 center}{0,\Tvertline/2+0.2}{\Thoriline}
+      \measuring{#2 b}{$(#2 c)-(0,\Tcedist/2)$}{0,\Tvertline/2+0.4}{\Tbcdist}
+
+    \end{scope}
+
+  \end{scope}
+
+}

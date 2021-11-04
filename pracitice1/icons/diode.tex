@@ -1,0 +1,53 @@
+
+%=============[二极管尺寸参数]=============
+\newcommand{\Dhoriupper}{0.6}
+\newcommand{\Dhorilowwer}{0.6}
+\newcommand{\Dheight}{0.6}
+
+%=============[]画图命令]==============
+\newcommand{\diode}[2]
+% #1 用于给定坐标点的变换
+% #2 用于给定元件标号
+{
+  \begin{scope}
+    [
+      >={Stealth},
+      scale = 1,
+      thick,
+      opacity = 1
+    ]
+
+    % - - - - - - [定义坐标点]- - - - - - -
+    \path[#1]
+      (0,0) coordinate (#2 center) --
+      ++(0,\Dheight/2) coordinate (#2 head) --
+      +(-\Dhoriupper/2,0) coordinate (#2 upper left) --
+      +(\Dhoriupper/2,0) coordinate (#2 upper right);
+
+    \path[#1]
+      (0,0) --
+      ++(0,-\Dheight/2) coordinate (#2 butt) --
+      +(-\Dhorilowwer/2,0) coordinate (#2 lowwer left) --
+      +(\Dhorilowwer/2,0) coordinate (#2 lowwer right);
+
+    % - - - - - - [线段绘制]- - - - - - -
+    \draw (#2 upper left) -- (#2 upper right);
+    \draw (#2 head) -- (#2 lowwer left) -- (#2 lowwer right) --
+      (#2 head) -- cycle;
+    %
+
+    % - - - - - - [绘制辅助线]- - - - - - -
+    \begin{scope}
+      [
+        help lines,
+        opacity = 0
+      ]
+
+      \measuring{#2 lowwer left}{#2 lowwer right}{0,-0.2}{\Dhorilowwer}
+      \measuring{#2 upper left}{#2 upper right}{0,0.2}{\Dhoriupper}
+      \measuring{#2 head}{#2 butt}{0.2,0}{\Dheight}
+
+    \end{scope}
+
+  \end{scope}
+}

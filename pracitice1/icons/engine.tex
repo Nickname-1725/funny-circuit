@@ -1,0 +1,30 @@
+
+%============[电机尺寸参数]===========
+\newcommand{\radengine}{0.4}
+
+
+%===========[绘制电机]===========
+\newcommand{\engine}[2]
+% #1 用于给定坐标点的变换
+% #2 用于给定元件标号
+{
+
+  \begin{scope}
+    [
+      >={Stealth},
+      opacity = 1
+    ]
+
+    % - - - - - [定义坐标点] - - - - - -
+    \path[#1]
+      (0,0) coordinate (#2 center) --
+      +(-\radengine,0) coordinate (#2 head) --
+      +(\radengine, 0) coordinate (#2 tail);
+    %
+
+    % - - - - - [绘制图形] - - - - - -
+    \draw (#2 center) circle (\radengine);
+    \draw [thick, ->] (#2 tail) -- (#2 head);
+
+  \end{scope}
+}

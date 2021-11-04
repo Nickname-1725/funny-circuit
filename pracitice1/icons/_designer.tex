@@ -1,0 +1,59 @@
+
+\documentclass{standalone}
+
+\usepackage{tikz}
+\usetikzlibrary
+{
+  calc,                     %用于计算坐标点
+  arrows.meta
+}
+
+%===========[导入元件参数, 命令]============
+\input{engine}
+%\input{triode}
+\input{diode}
+\input{ground}
+%\input{funny}
+\input{funnyTriode}
+
+%============[定义测量命令]============
+\newcommand{\measuring}[4]
+% 用以对两给定坐标标注距离
+% #1 坐标1
+% #2 坐标2
+% #3 偏移量
+% #4 标注数值
+{
+  \draw (#1) -- ($(#1) + (#3)$);
+  \draw [<->] ($(#1) + (#3)$) --
+    node {#4} ($(#2) + (#3)$);
+  \draw ($(#2) + (#3)$) -- (#2);
+}
+
+%===========[查看图形]============
+\begin{document}
+  \begin{tikzpicture}
+
+    %==============[绘制网格线]==============
+    \begin{scope}
+      [
+        help lines,
+        opacity = 1
+      ]
+      \draw [step = 0.5] (-1,-1) grid (1,1); %元件设计网格线
+    \end{scope}
+
+    %=============={绘制元件}===============
+    \begin{scope}
+      %\engine{}{E}
+      %\diode{}{D0}
+      %\triode{}{T0}
+      %\ground{}{G}
+      %\funny{}
+      \funnyTriode{}
+
+    \end{scope}
+
+  \end{tikzpicture}
+
+\end{document}

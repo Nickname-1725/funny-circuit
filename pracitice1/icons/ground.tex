@@ -1,0 +1,16 @@
+
+\newcommand{\Gvert}{0.5}
+\newcommand{\Ghori}{0.8}
+
+\newcommand{\ground}[2]
+{
+  \path [#1]
+    (0,0) coordinate (#2 center) --
+    +(0,-\Gvert) coordinate (#2 butt) --
+    +(-\Ghori/2,-\Gvert) coordinate (#2 lowwer left) --
+    +(\Ghori/2,-\Gvert) coordinate (#2 lowwer right);
+  %
+
+  \draw (#2 center) -- (#2 butt);
+  \draw [very thick] (#2 lowwer left) -- (#2 lowwer right);
+}

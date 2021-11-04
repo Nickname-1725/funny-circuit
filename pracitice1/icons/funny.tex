@@ -1,0 +1,167 @@
+
+
+\usetikzlibrary
+{
+  calc,         %用以计算坐标
+  shadings,     %用以添加阴影或者渐变
+}
+
+%=============[定义参数]==============
+% - - - - - - [定义脸部轮廓参数]- - - - - - -
+\newcommand{\RadiusOutline}{{sqrt(5)}}
+\newcommand{\ColorFace}{yellow!45!orange!70!white}
+
+% - - - - - - [定义嘴巴轮廓参数]- - - - - - -
+\newcommand{\RadiusMouth}{{sqrt(3)}}
+
+% - - - - - - [定义眼眶参数]- - - - - - -
+\newcommand{\CoordinateOrbitLeft}{(-1,-1)}
+\newcommand{\CoordinateOrbitRight}{( 1,-1)}
+\newcommand{\RadiusOrbitOut}{{sqrt(5)}}
+\newcommand{\RadiusOrbitIn}{2}
+\newcommand{\AngleOrbit}{180*3/8}
+\newcommand{\RadiusOrbitClose}
+           {(\RadiusOrbitOut-\RadiusOrbitIn)/2}
+%
+\def\OrbitPath#1#2
+% #1 起始点
+% #2 选项, 可选\draw, \clip.
+{
+  \path [#2] (#1)
+        arc [start angle = 90, end angle = 180 - \AngleOrbit,
+             radius = \RadiusOrbitOut]
+        arc [start angle = 180 -\AngleOrbit, end angle = 360-\AngleOrbit,
+             radius = \RadiusOrbitClose]
+        arc [start angle = 180 -\AngleOrbit, end angle = \AngleOrbit,
+             radius = \RadiusOrbitIn]
+        arc [start angle = \AngleOrbit - 180, end angle = \AngleOrbit,
+             radius = \RadiusOrbitClose]
+        arc [start angle = \AngleOrbit, end angle = 90,
+             radius = \RadiusOrbitOut]
+        -- cycle;
+}
+\def\OrbitDraw#1{\OrbitPath{#1}{draw}}
+\def\OrbitClip#1{\OrbitPath{#1}{clip}}
+
+% - - - - - - [定义瞳仁参数]- - - - - - -
+\newcommand{\RadiusPositionPupil}{(\RadiusOrbitOut+\RadiusOrbitIn)/2}
+\newcommand{\AnglePupil}{110}
+\newcommand{\RadiusPupil}{\RadiusOrbitClose}
+\newcommand{\CoordinatePupilLeft}
+           {($(NodeOrbitLeft) + (\AnglePupil:{\RadiusPositionPupil})$)}
+\newcommand{\CoordinatePupilRight}
+           {($(NodeOrbitRight) + (\AnglePupil:{\RadiusPositionPupil})$)}
+%
+% - - - - - - [定义眉毛参数]- - - - - - -
+\newcommand{\XStartBrow}{0.5}
+\newcommand{\YStartBrow}{1.4}
+
+\newcommand{\XTopBrow}  {0.9}
+\newcommand{\YTopBrow}  {2.2}
+
+\newcommand{\XEndpBrow} {1.2}
+\newcommand{\YEndBrow}  {1.7}
+
+\newcommand{\ThickBrow} {0.1}
+
+% - - - - - - [定义红晕参数]- - - - - - -
+\newcommand{\XBlushCentre}{1.4}
+\newcommand{\YBlushCentre}{0.6}
+\newcommand{\CoordinateRightBlushCcentre}{(\XBlushCentre,\YBlushCentre)}
+\newcommand{\CoordinateLeftBlushCcentre}{(-\XBlushCentre,\YBlushCentre)}
+
+\newcommand{\XRadBlush}{0.4}
+\newcommand{\YRadBlush}{0.2}
+
+
+
+\newcommand{\funny}[1]
+% #1 用以给定坐标变换
+{
+  \begin{scope}[#1,scale = 0.15]
+    %=============[绘制脸蛋]==============
+    \begin{scope}
+      [very thin, draw = yellow]
+      \draw [shade, ball color = \ColorFace ] (0,0) circle (\RadiusOutline);
+    \end{scope}
+
+    %=============[绘制嘴巴]==============
+    \begin{scope}
+      [very thin, yellow]
+      \draw (\RadiusMouth,0)
+            arc [start angle = 0, end angle = -180, radius = \RadiusMouth];
+    \end{scope}
+
+    %=============[绘制眼眶和填充]==============
+    \begin{scope}
+      [very thin, draw = black!10!white, ball color = white]
+      \node (NodeOrbitLeft) at \CoordinateOrbitLeft {};
+      \node (NodeOrbitRight) at \CoordinateOrbitRight{};
+      %
+      \node (Node Nail Left) at ($(NodeOrbitLeft) + (0,\RadiusOrbitOut)$){};
+      \node (Node Nail Right) at ($(NodeOrbitRight) + (0,\RadiusOrbitOut)$){};
+
+      % - - - - - - [左眼填充]- - - - - - -
+      \begin{scope}
+        \OrbitClip{Node Nail Left}
+        \shade  (0,0) circle (\RadiusOutline);
+      \end{scope}
+
+      % - - - - - - [右眼填充]- - - - - - -
+      \begin{scope}
+        \OrbitClip{Node Nail Right}
+        \shade  (0,0) circle (\RadiusOutline);
+      \end{scope}
+
+      % - - - - - - [绘制眼眶框线]- - - - - - -
+      \OrbitDraw{Node Nail Left}
+      \OrbitDraw{Node Nail Right}
+
+    \end{scope}
+
+    %=============[绘制眼珠]==============
+    \begin{scope}
+      [very thin, draw = red!10!black, fill = red!30!black]
+      \node (NodePupilLeft) at \CoordinatePupilLeft {};
+      \node (NodePupilRight) at \CoordinatePupilRight {};
+      \filldraw (NodePupilLeft) circle ({\RadiusPupil});
+      \filldraw (NodePupilRight) circle ({\RadiusPupil});
+    \end{scope}
+
+    %=============[绘制眉毛]==============
+    \begin{scope}
+      [fill = black]
+      \node (Node Start Right Brow) at (\XStartBrow , \YStartBrow)   {};
+      \node (Node End Right Brow)   at (\XEndpBrow  , \YEndBrow)     {};
+      \node (Node Top Right Brow)   at (\XTopBrow   , \YTopBrow)     {};
+      \node (Node Below Right Brow) at (\XTopBrow   , \YTopBrow-\ThickBrow){};
+
+      \node (Node Start Left Brow) at (-\XStartBrow, \YStartBrow)  {};
+      \node (Node End Left Brow)   at (-\XEndpBrow , \YEndBrow)    {};
+      \node (Node Top Left Brow)   at (-\XTopBrow  , \YTopBrow)    {};
+      \node (Node Below Left Brow) at (-\XTopBrow  , \YTopBrow-\ThickBrow){};
+
+      \fill (Node Start Right Brow)
+            parabola bend (Node Top Right Brow) (Node End Right Brow)
+            parabola bend (Node Below Right Brow)(Node Start Right Brow)
+            -- cycle;
+      \fill (Node Start Left Brow)
+            parabola bend (Node Top Left Brow) (Node End Left Brow)
+            parabola bend (Node Below Left Brow)(Node Start Left Brow)
+            -- cycle;
+    \end{scope}
+
+    %=============[绘制红晕]==============
+    \begin{scope}
+      [ opacity = 0.3, inner color=red,outer color = \ColorFace]
+      \node (Node Right Blush) at \CoordinateRightBlushCcentre {};
+      \node (Node Left Blush) at \CoordinateLeftBlushCcentre {};
+
+      \shade (Node Right Blush)
+            ellipse [x radius = \XRadBlush, y radius = \YRadBlush];
+      \shade (Node Left Blush)
+            ellipse [x radius = \XRadBlush, y radius = \YRadBlush];
+    \end{scope}
+
+  \end{scope}
+}
